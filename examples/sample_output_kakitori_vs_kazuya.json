@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "topic": "「普通の女の子」と夜職、水商売23%データの解釈、ツイート数と『普通』の関係",
+    "sideA": "火気取り (@Virtue_Vulture_)",
+    "sideB": "KAZUYA (@kazuyaaaaaaaman)"
+  },
+  "scores": {
+    "A": {
+      "validity": 72,
+      "consistency": 63,
+      "interpretation": 80,
+      "clarity": 58,
+      "persuasiveness": 60,
+      "stance": 30,
+      "fallacyPenalty": 40,
+      "total": 323
+    },
+    "B": {
+      "validity": 48,
+      "consistency": 55,
+      "interpretation": 40,
+      "clarity": 50,
+      "persuasiveness": 52,
+      "stance": 34,
+      "fallacyPenalty": 55,
+      "total": 224
+    }
+  },
+  "winner": "A",
+  "summaryReasons": [
+    "データの読み方と23%の意味について、火気取り側は概ね正確に説明しているのに対し、KAZUYA側は誤読を認めた後もその前提に依拠した主張を継続している。",
+    "詭弁・人格攻撃は双方に見られるが、誤読継続や『逃げた』レッテル貼りなど、議論を崩す方向への依存度はKAZUYA側の方が高い。",
+    "『普通』や『一般』の定義について、火気取り側は大学レベルや観察範囲を一応言語化している一方、KAZUYA側は主観的なイメージに依拠しがちで再現性が低い。"
+  ]
+}
