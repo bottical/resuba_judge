@@ -49,6 +49,7 @@ function bindEvents() {
   const btnUpdate = document.getElementById("btnUpdate");
   const btnReset = document.getElementById("btnReset");
   const btnApplyJson = document.getElementById("btnApplyJson");
+  const btnMockAi = document.getElementById("btnMockAi");
 
   btnUpdate.addEventListener("click", () => {
     updateStateFromInputs();
@@ -65,6 +66,12 @@ function bindEvents() {
   btnApplyJson.addEventListener("click", () => {
     applyJson();
   });
+
+  if (btnMockAi) {
+    btnMockAi.addEventListener("click", () => {
+      handleMockAiAnalysis();
+    });
+  }
 }
 
 function getNumberValue(id, min = 0, max = 100, fallback = 0) {
@@ -108,6 +115,9 @@ function updateStateFromInputs() {
 }
 
 function resetInputs() {
+  const transcript = document.getElementById("rawTranscript");
+  if (transcript) transcript.value = "";
+
   document.getElementById("topic").value = "";
   document.getElementById("sideAName").value = "";
   document.getElementById("sideBName").value = "";
@@ -193,10 +203,21 @@ function applyJson() {
       if (typeof B.stance === "number")
         document.getElementById("B_stance").value = B.stance;
 
-      if (typeof A.fallacyPenalty === "number")
-        document.getElementById("A_fallacy").value = A.fallacyPenalty;
-      if (typeof B.fallacyPenalty === "number")
-        document.getElementById("B_fallacy").value = B.fallacyPenalty;
+      const fallacyA =
+        typeof A.fallacyPenalty === "number"
+          ? A.fallacyPenalty
+          : typeof A.fallacy === "number"
+          ? A.fallacy
+          : null;
+      const fallacyB =
+        typeof B.fallacyPenalty === "number"
+          ? B.fallacyPenalty
+          : typeof B.fallacy === "number"
+          ? B.fallacy
+          : null;
+
+      if (fallacyA !== null) document.getElementById("A_fallacy").value = fallacyA;
+      if (fallacyB !== null) document.getElementById("B_fallacy").value = fallacyB;
     }
     if (typeof data.winner === "string") {
       const normalized = data.winner.toLowerCase();
@@ -218,6 +239,158 @@ function applyJson() {
     console.error(e);
     alert("JSONの解析に失敗しました。形式を確認してください。");
   }
+}
+
+function handleMockAiAnalysis() {
+  const transcriptEl = document.getElementById("rawTranscript");
+  if (!transcriptEl) return;
+  const transcript = transcriptEl.value.trim();
+  if (!transcript) {
+    alert("レスバテキストが入力されていません。");
+    return;
+  }
+
+  const mock = mockAnalyzeTranscript(transcript);
+  const jsonInput = document.getElementById("jsonInput");
+  jsonInput.value = JSON.stringify(mock, null, 2);
+  applyJson();
+}
+
+function mockAnalyzeTranscript(transcript) {
+  const lines = transcript
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  const participants = [];
+  const stats = {};
+
+  const ensureStats = (name) => {
+    if (!stats[name]) {
+      stats[name] = {
+        lines: 0,
+        chars: 0,
+        questions: 0,
+        exclaims: 0,
+        negatives: 0
+      };
+    }
+    return stats[name];
+  };
+
+  const negativePatterns = [
+    /死ね/g,
+    /殺す/g,
+    /バカ/g,
+    /馬鹿/g,
+    /クソ/g,
+    /ゴミ/g,
+    /最悪/g,
+    /黙れ/g,
+    /雑魚/g
+  ];
+
+  lines.forEach((line) => {
+    const match = line.match(/^([^\s:：]+)\s*[:：](.+)$/);
+    const speaker = match ? match[1].trim() : "";
+    const content = match ? match[2].trim() : line;
+    const normalizedSpeaker = speaker || "不明";
+
+    if (normalizedSpeaker && !participants.includes(normalizedSpeaker)) {
+      participants.push(normalizedSpeaker);
+    }
+
+    const target = ensureStats(normalizedSpeaker);
+    target.lines += 1;
+    target.chars += content.length;
+    target.questions += (content.match(/[?？]/g) || []).length;
+    target.exclaims += (content.match(/[!！]/g) || []).length;
+
+    negativePatterns.forEach((pattern) => {
+      const matches = content.match(pattern);
+      if (matches) {
+        target.negatives += matches.length;
+      }
+    });
+  });
+
+  const sideA = participants[0] || "側A";
+  const sideB = participants[1] || (participants[0] ? "相手" : "側B");
+  const defaultStats = { lines: 0, chars: 0, questions: 0, exclaims: 0, negatives: 0 };
+  const aStats = stats[sideA] || defaultStats;
+  const bStats = stats[sideB] || defaultStats;
+
+  const clampScore = (value, min = 15, max = 95) =>
+    Math.round(Math.min(max, Math.max(min, value)));
+  const clampPenalty = (value) => Math.round(Math.min(60, Math.max(0, value)));
+  const avgLength = (s) => (s.lines === 0 ? 0 : s.chars / s.lines);
+
+  const validityDiff = (aStats.lines - bStats.lines) * 1.5;
+  const consistencyDiff = (avgLength(aStats) - avgLength(bStats)) * 6;
+  const referenceDiff = (aStats.questions - bStats.questions) * 2;
+  const clarityDiff = (bStats.exclaims - aStats.exclaims) * 1.4;
+  const persuasionDiff = (aStats.chars - bStats.chars) * 0.04 + referenceDiff * 0.3;
+  const stanceDiff = (bStats.negatives + bStats.exclaims * 0.5 - (aStats.negatives + aStats.exclaims * 0.5)) * 3;
+
+  const scoresA = {
+    validity: clampScore(60 + validityDiff),
+    consistency: clampScore(58 + consistencyDiff),
+    interpretation: clampScore(62 + referenceDiff),
+    clarity: clampScore(57 + clarityDiff),
+    persuasiveness: clampScore(60 + persuasionDiff),
+    stance: clampScore(70 + stanceDiff, 20, 92)
+  };
+
+  const scoresB = {
+    validity: clampScore(60 - validityDiff),
+    consistency: clampScore(58 - consistencyDiff),
+    interpretation: clampScore(62 - referenceDiff),
+    clarity: clampScore(57 - clarityDiff),
+    persuasiveness: clampScore(60 - persuasionDiff),
+    stance: clampScore(70 - stanceDiff, 20, 92)
+  };
+
+  scoresA.fallacy = clampPenalty(20 + aStats.exclaims * 2 + aStats.negatives * 5);
+  scoresB.fallacy = clampPenalty(20 + bStats.exclaims * 2 + bStats.negatives * 5);
+  scoresA.fallacyPenalty = scoresA.fallacy;
+  scoresB.fallacyPenalty = scoresB.fallacy;
+
+  const totalA = computeTotal(scoresA);
+  const totalB = computeTotal(scoresB);
+  let winner = "draw";
+  if (Math.abs(totalA - totalB) >= state.drawThreshold) {
+    winner = totalA > totalB ? "A" : "B";
+  }
+
+  const firstLine = lines[0] || "";
+  const topicCandidate = firstLine
+    .replace(/^([^\s:：]+)\s*[:：]/, "")
+    .trim()
+    .slice(0, 80);
+  const topic = topicCandidate || `${sideA} vs ${sideB} のレスバログ`;
+
+  const summaryReasons = [
+    `${sideA}は${aStats.lines}発言で、${sideB}の${bStats.lines}発言と比較して${
+      aStats.lines >= bStats.lines ? "議論を主導" : "控えめ"
+    }。`,
+    `疑問・ツッコミの回数：${sideA} ${aStats.questions} 回 / ${sideB} ${bStats.questions} 回。`,
+    `詭弁ペナルティ：${sideA} ${scoresA.fallacy} 点 / ${sideB} ${scoresB.fallacy} 点。`
+  ];
+
+  return {
+    meta: {
+      topic,
+      sideA,
+      sideB,
+      turns: lines.length
+    },
+    scores: {
+      A: scoresA,
+      B: scoresB
+    },
+    winner,
+    summaryReasons
+  };
 }
 
 // 総合点計算

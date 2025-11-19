@@ -122,6 +122,58 @@ body {
   margin-top: 6px;
 }
 
+.ai-ingest {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 14px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-ingest textarea {
+  min-height: 120px;
+}
+
+.ai-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.advanced-inputs {
+  margin-top: 12px;
+  border-radius: var(--radius-md);
+  border: 1px dashed #2b3245;
+  padding: 8px 10px 14px;
+  background: rgba(10, 14, 24, 0.6);
+}
+
+.advanced-inputs > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.advanced-inputs > summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-inputs[open] > summary::after,
+.advanced-inputs:not([open]) > summary::after {
+  content: "▼";
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: 8px;
+}
+
+.advanced-inputs:not([open]) > summary::after {
+  content: "▶";
+}
+
 .form-row.two-cols {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -236,6 +288,11 @@ textarea {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
+}
+
+.form-actions.compact {
+  justify-content: flex-end;
+  margin-top: 6px;
 }
 
 /* buttons */
