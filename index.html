@@ -37,12 +37,39 @@
             >
           </div>
 
+          <div class="api-config">
+            <div class="form-group">
+              <label for="apiEndpoint">AI APIエンドポイント</label>
+              <input
+                id="apiEndpoint"
+                type="url"
+                placeholder="https://example.com/api/analyze"
+                autocomplete="off"
+              />
+            </div>
+            <div class="form-group">
+              <label for="apiKey">APIキー（必要に応じて）</label>
+              <input
+                id="apiKey"
+                type="password"
+                placeholder="sk-..."
+                autocomplete="off"
+              />
+              <small class="hint"
+                >※APIキーはブラウザのローカルストレージにのみ保存されます。</small
+              >
+            </div>
+          </div>
+
           <div class="ai-actions">
-            <button type="button" id="btnMockAi" class="btn primary">
-              レスバテキストを解析（モックAI）
+            <button type="button" id="btnAiApi" class="btn primary">
+              レスバテキストを解析（AI API）
             </button>
-            <p class="hint">
-              実運用ではサーバーサイドのAI APIでJSONを生成してください。ここではローカルでモック計算を行います。
+            <button type="button" id="btnMockAi" class="btn ghost">
+              デモ用のモックAIで試す
+            </button>
+            <p class="hint api-note">
+              ※AI APIから取得できるJSONの形式は下の入力欄へそのまま貼り付ける形式と同じです。APIが未設定の場合はモックAIをご利用ください。
             </p>
           </div>
 

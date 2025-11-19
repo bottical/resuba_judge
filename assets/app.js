@@ -36,10 +36,17 @@ const state = {
   summaryReasons: []
 };
 
+const STORAGE_KEYS = {
+  apiEndpoint: "resuba_api_endpoint",
+  apiKey: "resuba_api_key"
+};
+
 let radarChart = null;
 let jsonApplyTimer = null;
+let aiRequestAbortController = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+  initApiSettings();
   bindEvents();
   // 初期表示
   updateStateFromInputs();
@@ -51,6 +58,7 @@ function bindEvents() {
   const btnUpdate = document.getElementById("btnUpdate");
   const btnReset = document.getElementById("btnReset");
   const btnMockAi = document.getElementById("btnMockAi");
+  const btnAiApi = document.getElementById("btnAiApi");
   const jsonInput = document.getElementById("jsonInput");
 
   btnUpdate.addEventListener("click", () => {
@@ -75,6 +83,173 @@ function bindEvents() {
     btnMockAi.addEventListener("click", () => {
       handleMockAiAnalysis();
     });
+  }
+
+  if (btnAiApi) {
+    btnAiApi.addEventListener("click", () => {
+      handleAiApiAnalysis();
+    });
+  }
+}
+
+function initApiSettings() {
+  const endpointInput = document.getElementById("apiEndpoint");
+  const apiKeyInput = document.getElementById("apiKey");
+
+  if (endpointInput) {
+    const savedEndpoint = safeLocalStorageGet(STORAGE_KEYS.apiEndpoint);
+    if (savedEndpoint) {
+      endpointInput.value = savedEndpoint;
+    }
+    endpointInput.addEventListener("change", (event) => {
+      safeLocalStorageSet(STORAGE_KEYS.apiEndpoint, event.target.value.trim());
+    });
+  }
+
+  if (apiKeyInput) {
+    const savedKey = safeLocalStorageGet(STORAGE_KEYS.apiKey);
+    if (savedKey) {
+      apiKeyInput.value = savedKey;
+    }
+    apiKeyInput.addEventListener("change", (event) => {
+      safeLocalStorageSet(STORAGE_KEYS.apiKey, event.target.value.trim());
+    });
+  }
+}
+
+function safeLocalStorageGet(key) {
+  try {
+    return window.localStorage.getItem(key) || "";
+  } catch (error) {
+    console.warn("localStorageが利用できません", error);
+    return "";
+  }
+}
+
+function safeLocalStorageSet(key, value) {
+  try {
+    if (!value) {
+      window.localStorage.removeItem(key);
+    } else {
+      window.localStorage.setItem(key, value);
+    }
+  } catch (error) {
+    console.warn("localStorageへの保存に失敗しました", error);
+  }
+}
+
+function getApiSettingsFromInputs() {
+  const endpointInput = document.getElementById("apiEndpoint");
+  const apiKeyInput = document.getElementById("apiKey");
+  return {
+    endpoint: endpointInput ? endpointInput.value.trim() : "",
+    apiKey: apiKeyInput ? apiKeyInput.value.trim() : ""
+  };
+}
+
+function buildApiPayloadFromInputs(transcript) {
+  const payload = { transcript };
+  const topicInput = document.getElementById("topic");
+  const sideAInput = document.getElementById("sideAName");
+  const sideBInput = document.getElementById("sideBName");
+
+  const meta = {};
+  if (topicInput && topicInput.value.trim()) meta.topic = topicInput.value.trim();
+  if (sideAInput && sideAInput.value.trim()) meta.sideA = sideAInput.value.trim();
+  if (sideBInput && sideBInput.value.trim()) meta.sideB = sideBInput.value.trim();
+  if (Object.keys(meta).length > 0) {
+    payload.meta = meta;
+  }
+  return payload;
+}
+
+function setAiApiButtonState(isLoading) {
+  const btn = document.getElementById("btnAiApi");
+  if (!btn) return;
+  if (!btn.dataset.defaultLabel) {
+    btn.dataset.defaultLabel = btn.textContent.trim();
+  }
+  btn.disabled = isLoading;
+  if (isLoading) {
+    btn.classList.add("loading");
+    btn.textContent = "解析中…";
+  } else {
+    btn.classList.remove("loading");
+    btn.textContent = btn.dataset.defaultLabel;
+  }
+}
+
+async function handleAiApiAnalysis() {
+  const transcriptEl = document.getElementById("rawTranscript");
+  if (!transcriptEl) return;
+  const transcript = transcriptEl.value.trim();
+  if (!transcript) {
+    alert("レスバテキストが入力されていません。");
+    return;
+  }
+
+  const { endpoint, apiKey } = getApiSettingsFromInputs();
+  if (!endpoint) {
+    alert("AI APIエンドポイントを入力してください。");
+    return;
+  }
+
+  if (aiRequestAbortController) {
+    aiRequestAbortController.abort();
+  }
+
+  const controller = new AbortController();
+  aiRequestAbortController = controller;
+
+  setAiApiButtonState(true);
+  updateJsonStatus("AI APIに問い合わせ中です…", "pending");
+
+  try {
+    const payload = buildApiPayloadFromInputs(transcript);
+    const headers = {
+      "Content-Type": "application/json"
+    };
+    if (apiKey) {
+      headers.Authorization = `Bearer ${apiKey}`;
+    }
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `HTTP ${response.status}`);
+    }
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      throw new Error("APIレスポンスのJSON解析に失敗しました。");
+    }
+
+    const jsonInput = document.getElementById("jsonInput");
+    const formatted = JSON.stringify(data, null, 2);
+    if (jsonInput) {
+      jsonInput.value = formatted;
+    }
+    applyJson(formatted);
+  } catch (error) {
+    if (error.name === "AbortError") {
+      return;
+    }
+    console.error("AI API error", error);
+    updateJsonStatus("AI API呼び出しに失敗しました。コンソールを確認してください。", "error");
+    alert(`AI APIの呼び出しに失敗しました。\n${error.message || "詳細不明"}`);
+  } finally {
+    if (aiRequestAbortController === controller) {
+      aiRequestAbortController = null;
+      setAiApiButtonState(false);
+    }
   }
 }
 
