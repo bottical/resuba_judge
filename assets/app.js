@@ -37,19 +37,21 @@ const state = {
 };
 
 let radarChart = null;
+let jsonApplyTimer = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   bindEvents();
   // 初期表示
   updateStateFromInputs();
   updatePreview();
+  updateJsonStatus("AIのJSONを貼り付けると自動反映します。");
 });
 
 function bindEvents() {
   const btnUpdate = document.getElementById("btnUpdate");
   const btnReset = document.getElementById("btnReset");
-  const btnApplyJson = document.getElementById("btnApplyJson");
   const btnMockAi = document.getElementById("btnMockAi");
+  const jsonInput = document.getElementById("jsonInput");
 
   btnUpdate.addEventListener("click", () => {
     updateStateFromInputs();
@@ -63,9 +65,11 @@ function bindEvents() {
     updatePreview();
   });
 
-  btnApplyJson.addEventListener("click", () => {
-    applyJson();
-  });
+  if (jsonInput) {
+    jsonInput.addEventListener("input", (event) => {
+      scheduleJsonApply(event.target.value);
+    });
+  }
 
   if (btnMockAi) {
     btnMockAi.addEventListener("click", () => {
@@ -142,13 +146,30 @@ function resetInputs() {
   document.getElementById("drawThreshold").value = 10;
   document.getElementById("summaryReasons").value = "";
   document.getElementById("jsonInput").value = "";
+  updateJsonStatus("AIのJSONを貼り付けると自動反映します。");
+}
+
+function scheduleJsonApply(rawText) {
+  const trimmed = (rawText || "").trim();
+  clearTimeout(jsonApplyTimer);
+  if (!trimmed) {
+    updateJsonStatus("AIのJSONを貼り付けると自動反映します。");
+    return;
+  }
+  updateJsonStatus("JSONを解析しています…", "pending");
+  jsonApplyTimer = setTimeout(() => {
+    applyJson(trimmed);
+  }, 450);
 }
 
 // JSON貼り付け → 反映
-function applyJson() {
-  const text = document.getElementById("jsonInput").value.trim();
+function applyJson(rawText = null) {
+  const text =
+    typeof rawText === "string"
+      ? rawText.trim()
+      : document.getElementById("jsonInput").value.trim();
   if (!text) {
-    alert("JSONが入力されていません。");
+    updateJsonStatus("JSONが入力されていません。", "error");
     return;
   }
   try {
@@ -235,9 +256,10 @@ function applyJson() {
     // 入力に反映後、プレビュー更新
     updateStateFromInputs();
     updatePreview();
+    updateJsonStatus("AI出力を反映しました。", "success");
   } catch (e) {
     console.error(e);
-    alert("JSONの解析に失敗しました。形式を確認してください。");
+    updateJsonStatus("JSONの解析に失敗しました。形式を確認してください。", "error");
   }
 }
 
@@ -253,7 +275,17 @@ function handleMockAiAnalysis() {
   const mock = mockAnalyzeTranscript(transcript);
   const jsonInput = document.getElementById("jsonInput");
   jsonInput.value = JSON.stringify(mock, null, 2);
-  applyJson();
+  applyJson(jsonInput.value);
+}
+
+function updateJsonStatus(message, state = "info") {
+  const statusEl = document.getElementById("jsonStatus");
+  if (!statusEl) return;
+  statusEl.textContent = message;
+  statusEl.classList.remove("pending", "success", "error");
+  if (state && state !== "info") {
+    statusEl.classList.add(state);
+  }
 }
 
 function mockAnalyzeTranscript(transcript) {

@@ -141,6 +141,24 @@ body {
   gap: 4px;
 }
 
+.json-status {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.json-status.pending {
+  color: var(--accent);
+}
+
+.json-status.success {
+  color: var(--good);
+}
+
+.json-status.error {
+  color: var(--danger);
+}
+
 .advanced-inputs {
   margin-top: 12px;
   border-radius: var(--radius-md);
