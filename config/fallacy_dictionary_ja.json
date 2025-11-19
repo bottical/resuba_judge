@@ -1,50 +1,111 @@
 {
   "meta": {
-    "description": "レスバ用簡易詭弁辞書（日本語）",
-    "note": "これはあくまでヒューリスティック用の補助辞書。最終判定はLLM側の判断に委ねる。"
+    "description": "レスバ用簡易詭弁辞書（日本語） - LLM負荷軽減のためのヒューリスティック補助辞書",
+    "note": "これはあくまでヒューリスティック用の補助辞書。最終判定はLLM側の判断に委ねる。typical_penaltyは相対的な重み付けの目安。",
+    "source": "論理的誤謬の一般的な分類およびインターネット上の議論の傾向に基づき作成"
   },
   "fallacies": [
     {
       "key": "ad_hominem",
       "label_ja": "人身攻撃",
-      "examples": ["バカ", "頭が悪い", "無能", "キモい", "低能", "底辺"],
+      "examples": ["バカ", "頭が悪い", "無能", "キモい", "低能", "底辺", "お前が言うな", "経験もないくせに", "独身のくせに", "子どものくせに"],
       "typical_penalty": 10
     },
     {
       "key": "strawman",
       "label_ja": "藁人形論法",
-      "examples": ["つまりお前はこう言ってる", "極論すぎる", "そんなことは言っていない"],
+      "examples": ["つまりお前はこう言ってる", "極論すぎる", "そんなことは言っていない", "結局、〇〇がしたいんだろ", "〇〇を全否定するのか"],
       "typical_penalty": 12
     },
     {
       "key": "red_herring",
       "label_ja": "論点すり替え",
-      "examples": ["それよりさ", "話は変わるが", "ところでさ"],
+      "examples": ["それよりさ", "話は変わるが", "ところでさ", "〇〇の件はどうなった", "関係ない話を持ち出すな"],
       "typical_penalty": 8
     },
     {
       "key": "burden_shifting",
       "label_ja": "証明責任のすり替え",
-      "examples": ["証明できないならお前が間違い", "反論しないなら認めたことになる"],
+      "examples": ["証明できないならお前が間違い", "反論しないなら認めたことになる", "証拠を出せ", "嘘だと思うなら自分で調べろ"],
       "typical_penalty": 10
     },
     {
       "key": "hasty_generalization",
       "label_ja": "早まった一般化",
-      "examples": ["みんな", "誰でも", "いつも", "全員", "普通は絶対そう"],
+      "examples": ["みんな", "誰でも", "いつも", "全員", "普通は絶対そう", "一部の事例でしかない", "〇〇の経験から言える"],
       "typical_penalty": 8
     },
     {
       "key": "slippery_slope",
       "label_ja": "滑り坂論法",
-      "examples": ["必ずこうなる", "一度でもやったら終わり", "破滅する"],
+      "examples": ["必ずこうなる", "一度でもやったら終わり", "破滅する", "〇〇したら次は〇〇になるぞ", "歯止めが利かなくなる"],
       "typical_penalty": 8
     },
     {
       "key": "whataboutism",
       "label_ja": "ホワットアバウトイズム",
-      "examples": ["○○はどうなんだよ", "他のやつはもっとひどい"],
+      "examples": ["〇〇はどうなんだよ", "他のやつはもっとひどい", "〇〇のことは棚上げか", "自分のことはどうなんだ"],
       "typical_penalty": 7
+    },
+    {
+      "key": "false_dilemma",
+      "label_ja": "誤った二分法",
+      "examples": ["〇〇か××の二択だ", "どちらかを選べ", "中間はない", "賛成か反対か", "白か黒か"],
+      "typical_penalty": 9
+    },
+    {
+      "key": "appeal_to_authority",
+      "label_ja": "権威に訴える論証",
+      "examples": ["〇〇先生が言ってた", "専門家も認めている", "〇〇大学の研究だ", "〇〇社のデータだ", "権威に逆らうのか"],
+      "typical_penalty": 7
+    },
+    {
+      "key": "appeal_to_emotion",
+      "label_ja": "感情に訴える論証",
+      "examples": ["かわいそう", "許せない", "怒りを感じる", "〇〇の気持ちを考えろ", "〇〇に同情する", "〇〇を恐れるべきだ"],
+      "typical_penalty": 6
+    },
+    {
+      "key": "appeal_to_ignorance",
+      "label_ja": "無知に訴える論証",
+      "examples": ["誰も証明できていない", "科学では解明されていない", "否定できないなら真実だ", "存在しないとは言えない"],
+      "typical_penalty": 9
+    },
+    {
+      "key": "circular_reasoning",
+      "label_ja": "循環論証",
+      "examples": ["なぜなら〇〇だからだ", "〇〇は正しい、なぜなら〇〇だからだ", "〇〇という事実は動かない"],
+      "typical_penalty": 11
+    },
+    {
+      "key": "appeal_to_popularity",
+      "label_ja": "バンドワゴン効果",
+      "examples": ["多数派の意見だ", "みんなそう思っている", "常識だ", "流行している", "〇〇が人気だ"],
+      "typical_penalty": 6
+    },
+    {
+      "key": "moving_the_goalposts",
+      "label_ja": "ゴールポストの移動",
+      "examples": ["〇〇だけでは不十分", "〇〇の証拠も出せ", "〇〇の条件を満たしていない", "〇〇も証明しろ"],
+      "typical_penalty": 10
+    },
+    {
+      "key": "special_pleading",
+      "label_ja": "特例による救済",
+      "examples": ["〇〇の場合は特別", "〇〇には当てはまらない", "〇〇は例外だ", "〇〇とは事情が違う"],
+      "typical_penalty": 9
+    },
+    {
+      "key": "poisoning_the_well",
+      "label_ja": "毒を盛る",
+      "examples": ["〇〇は信用できない", "〇〇の言うことは聞かなくていい", "〇〇は嘘つきだ", "〇〇は偏見を持っている"],
+      "typical_penalty": 11
+    },
+    {
+      "key": "false_cause",
+      "label_ja": "原因の誤謬",
+      "examples": ["〇〇のせいで××になった", "〇〇の後だから××だ", "〇〇と××は関係がある", "〇〇が原因に違いない"],
+      "typical_penalty": 8
     }
   ]
 }
