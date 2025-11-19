@@ -53,9 +53,10 @@
               rows="6"
               placeholder='{"meta": {...}, "scores": {...}, "winner": "..."}'
             ></textarea>
-            <div class="form-actions compact">
-              <button type="button" id="btnApplyJson" class="btn secondary">JSONから反映</button>
-            </div>
+            <small class="hint"
+              >GPTなどのAIが返すJSONを貼り付けるだけで即時にプレビューへ反映されます。</small
+            >
+            <p id="jsonStatus" class="json-status" aria-live="polite"></p>
           </div>
         </div>
 
