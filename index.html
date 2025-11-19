@@ -24,23 +24,64 @@
       <details open>
         <summary>入力パネル（タップして開閉）</summary>
 
-        <div class="form-grid">
+        <div class="ai-ingest">
           <div class="form-group">
-            <label for="topic">テーマ / 論点要約</label>
-            <textarea id="topic" rows="2" placeholder="例：『普通の女の子』と夜職、水商売23%データの解釈など"></textarea>
+            <label for="rawTranscript">レスバテキスト（AIに渡す元ログ）</label>
+            <textarea
+              id="rawTranscript"
+              rows="6"
+              placeholder="例：\nA：統計的には夜職の子が普通と言われてるんだよ\nB：そのデータは文脈を無視してるだけでしょ？ みたいな生ログを貼り付け"
+            ></textarea>
+            <small class="hint"
+              >ユーザーはここにレスバ全文を貼り付けるだけでOK。以降のIDやスコアはAI側のJSONから反映します。</small
+            >
           </div>
 
-          <div class="form-row two-cols">
-            <div class="form-group">
-              <label for="sideAName">側Aの名前 / ID</label>
-              <input id="sideAName" type="text" placeholder="例：火気取り (@Virtue_Vulture_)" />
-            </div>
-            <div class="form-group">
-              <label for="sideBName">側Bの名前 / ID</label>
-              <input id="sideBName" type="text" placeholder="例：KAZUYA (@kazuyaaaaaaaman)" />
+          <div class="ai-actions">
+            <button type="button" id="btnMockAi" class="btn primary">
+              レスバテキストを解析（モックAI）
+            </button>
+            <p class="hint">
+              実運用ではサーバーサイドのAI APIでJSONを生成してください。ここではローカルでモック計算を行います。
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="jsonInput">AIからのJSON出力</label>
+            <textarea
+              id="jsonInput"
+              rows="6"
+              placeholder='{"meta": {...}, "scores": {...}, "winner": "..."}'
+            ></textarea>
+            <div class="form-actions compact">
+              <button type="button" id="btnApplyJson" class="btn secondary">JSONから反映</button>
             </div>
           </div>
         </div>
+
+        <details class="advanced-inputs">
+          <summary>詳細編集（必要に応じて）</summary>
+          <p class="hint">
+            AIの出力を上書きしたい場合は、従来どおり各フィールドを編集して「プレビュー更新」を押してください。
+          </p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="topic">テーマ / 論点要約</label>
+              <textarea id="topic" rows="2" placeholder="例：『普通の女の子』と夜職、水商売23%データの解釈など"></textarea>
+            </div>
+
+            <div class="form-row two-cols">
+              <div class="form-group">
+                <label for="sideAName">側Aの名前 / ID</label>
+                <input id="sideAName" type="text" placeholder="例：火気取り (@Virtue_Vulture_)" />
+              </div>
+              <div class="form-group">
+                <label for="sideBName">側Bの名前 / ID</label>
+                <input id="sideBName" type="text" placeholder="例：KAZUYA (@kazuyaaaaaaaman)" />
+              </div>
+            </div>
+          </div>
 
         <!-- スコア入力テーブル -->
         <div class="scores-wrap">
@@ -168,13 +209,11 @@
 
           <div class="form-group">
             <label for="summaryReasons">判定理由（箇条書き・スクショ用）</label>
-            <textarea id="summaryReasons" rows="3" placeholder="例：&#10;- データの読み方と23%の意味について、側Aは正確に説明している一方で、側Bは誤読を継続している&#10;- 詭弁・人格攻撃は双方にあるが、議論を崩す方向への依存度は側Bの方が高い"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="jsonInput">（任意）AIからのJSON出力を貼り付け</label>
-            <textarea id="jsonInput" rows="4" placeholder='{"meta": {...}, "scores": {...}, "winner": "..."}'></textarea>
-            <button type="button" id="btnApplyJson" class="btn secondary">JSONから反映</button>
+            <textarea
+              id="summaryReasons"
+              rows="3"
+              placeholder="例：&#10;- データの読み方と23%の意味について、側Aは正確に説明している一方で、側Bは誤読を継続している&#10;- 詭弁・人格攻撃は双方にあるが、議論を崩す方向への依存度は側Bの方が高い"
+            ></textarea>
           </div>
         </div>
 
@@ -186,6 +225,7 @@
             入力をリセット
           </button>
         </div>
+        </details>
       </details>
     </section>
 
