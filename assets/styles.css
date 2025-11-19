@@ -131,6 +131,24 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.api-config {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(10, 13, 20, 0.75);
+}
+
+.api-config .form-group {
+  margin: 0;
+}
+
+.api-config input[type="password"] {
+  letter-spacing: 0.05em;
+}
+
 .ai-ingest textarea {
   min-height: 120px;
 }
@@ -139,6 +157,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.ai-actions .api-note {
+  margin-top: 6px;
 }
 
 .json-status {
@@ -348,6 +370,16 @@ textarea {
 
 .btn:hover {
   opacity: 0.95;
+}
+
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn.loading {
+  position: relative;
+  pointer-events: none;
 }
 
 /* preview / report */
