@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "description": "レスバ用簡易詭弁辞書（日本語）",
+    "note": "これはあくまでヒューリスティック用の補助辞書。最終判定はLLM側の判断に委ねる。"
+  },
+  "fallacies": [
+    {
+      "key": "ad_hominem",
+      "label_ja": "人身攻撃",
+      "examples": ["バカ", "頭が悪い", "無能", "キモい", "低能", "底辺"],
+      "typical_penalty": 10
+    },
+    {
+      "key": "strawman",
+      "label_ja": "藁人形論法",
+      "examples": ["つまりお前はこう言ってる", "極論すぎる", "そんなことは言っていない"],
+      "typical_penalty": 12
+    },
+    {
+      "key": "red_herring",
+      "label_ja": "論点すり替え",
+      "examples": ["それよりさ", "話は変わるが", "ところでさ"],
+      "typical_penalty": 8
+    },
+    {
+      "key": "burden_shifting",
+      "label_ja": "証明責任のすり替え",
+      "examples": ["証明できないならお前が間違い", "反論しないなら認めたことになる"],
+      "typical_penalty": 10
+    },
+    {
+      "key": "hasty_generalization",
+      "label_ja": "早まった一般化",
+      "examples": ["みんな", "誰でも", "いつも", "全員", "普通は絶対そう"],
+      "typical_penalty": 8
+    },
+    {
+      "key": "slippery_slope",
+      "label_ja": "滑り坂論法",
+      "examples": ["必ずこうなる", "一度でもやったら終わり", "破滅する"],
+      "typical_penalty": 8
+    },
+    {
+      "key": "whataboutism",
+      "label_ja": "ホワットアバウトイズム",
+      "examples": ["○○はどうなんだよ", "他のやつはもっとひどい"],
+      "typical_penalty": 7
+    }
+  ]
+}
