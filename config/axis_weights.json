@@ -1,0 +1,15 @@
+{
+  "weights": {
+    "validity": 0.20,
+    "consistency": 0.20,
+    "interpretation": 0.15,
+    "clarity": 0.15,
+    "persuasiveness": 0.15,
+    "stance": 0.15
+  },
+  "fallacyPenalty": {
+    "min": 0,
+    "max": 60
+  },
+  "drawThreshold": 10
+}
