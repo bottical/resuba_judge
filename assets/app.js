@@ -779,7 +779,8 @@ function updateRadarChart() {
         ticks: {
           display: true,
           color: "#9aa3b9",
-          stepSize: 20
+          stepSize: 20,
+          backdropColor: "transparent"
         },
         grid: {
           color: "#252c3c"
