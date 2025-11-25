@@ -163,7 +163,6 @@
       "total": 0
     }
   },
-  "winner": "A | B | draw",
   "summaryReasons": [
     "...",
     "..."
