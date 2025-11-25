@@ -618,6 +618,8 @@ function updatePreview() {
   // 総合点計算
   const totalA = computeTotal(state.scores.A);
   const totalB = computeTotal(state.scores.B);
+  const displayNameA = state.sideAName || "側A";
+  const displayNameB = state.sideBName || "側B";
 
   // 必要に応じて自動判定（drawThreshold使用）
   let autoWinner = "draw";
@@ -642,10 +644,21 @@ function updatePreview() {
       ? `テーマ：${state.topic.trim()}`
       : "テーマ：入力パネルからテーマを設定してください。";
 
-  document.getElementById("reportSideAName").textContent = state.sideAName;
-  document.getElementById("reportSideBName").textContent = state.sideBName;
-  document.getElementById("thSideA").textContent = state.sideAName;
-  document.getElementById("thSideB").textContent = state.sideBName;
+  document.getElementById("reportSideAName").textContent = displayNameA;
+  document.getElementById("reportSideBName").textContent = displayNameB;
+
+  const partyLabelA = document.getElementById("reportSideALabel");
+  const partyLabelB = document.getElementById("reportSideBLabel");
+  if (partyLabelA) partyLabelA.textContent = displayNameA;
+  if (partyLabelB) partyLabelB.textContent = displayNameB;
+
+  const totalLabelA = document.getElementById("totalLabelSideA");
+  const totalLabelB = document.getElementById("totalLabelSideB");
+  if (totalLabelA) totalLabelA.textContent = displayNameA;
+  if (totalLabelB) totalLabelB.textContent = displayNameB;
+
+  document.getElementById("thSideA").textContent = displayNameA;
+  document.getElementById("thSideB").textContent = displayNameB;
 
   // 総合点
   document.getElementById("reportTotalA").textContent = totalA;
@@ -684,10 +697,10 @@ function updatePreview() {
     text += "引き分け";
     badge.classList.add("draw");
   } else if (winnerFinal === "A") {
-    text += "側A勝利";
+    text += `${displayNameA} 勝利`;
     badge.classList.add("win-a");
   } else if (winnerFinal === "B") {
-    text += "側B勝利";
+    text += `${displayNameB} 勝利`;
     badge.classList.add("win-b");
   } else {
     text += "未判定";
@@ -696,7 +709,7 @@ function updatePreview() {
 
   // 判定テキスト
   const verdictEl = document.getElementById("reportVerdictText");
-  verdictEl.textContent = `総合点：側A ${totalA} 点 / 側B ${totalB} 点（点差 ${
+  verdictEl.textContent = `総合点：${displayNameA} ${totalA} 点 / ${displayNameB} ${totalB} 点（点差 ${
     Math.abs(totalA - totalB)
   }、引き分け閾値 ${state.drawThreshold}）`;
 
