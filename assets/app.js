@@ -415,14 +415,7 @@ function applyJson(rawText = null) {
       if (fallacyA !== null) document.getElementById("A_fallacy").value = fallacyA;
       if (fallacyB !== null) document.getElementById("B_fallacy").value = fallacyB;
     }
-    if (typeof data.winner === "string") {
-      const normalized = data.winner.toLowerCase();
-      if (normalized === "a" || normalized === "b" || normalized === "draw") {
-        document.getElementById("winner").value = normalized.toUpperCase
-          ? normalized
-          : normalized;
-      }
-    }
+
     if (Array.isArray(data.summaryReasons)) {
       document.getElementById("summaryReasons").value =
         data.summaryReasons.join("\n");
