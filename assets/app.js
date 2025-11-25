@@ -263,8 +263,8 @@ function getNumberValue(id, min = 0, max = 100, fallback = 0) {
 
 function updateStateFromInputs() {
   state.topic = document.getElementById("topic").value.trim();
-  state.sideAName = document.getElementById("sideAName").value.trim() || "側A";
-  state.sideBName = document.getElementById("sideBName").value.trim() || "側B";
+  state.sideAName = document.getElementById("sideAName").value.trim() || "Aサイド";
+  state.sideBName = document.getElementById("sideBName").value.trim() || "Bサイド";
 
   state.scores.A.validity = getNumberValue("A_validity");
   state.scores.B.validity = getNumberValue("B_validity");
@@ -514,8 +514,8 @@ function mockAnalyzeTranscript(transcript) {
     });
   });
 
-  const sideA = participants[0] || "側A";
-  const sideB = participants[1] || (participants[0] ? "相手" : "側B");
+  const sideA = participants[0] || "Aサイド";
+  const sideB = participants[1] || (participants[0] ? "相手" : "Bサイド");
   const defaultStats = { lines: 0, chars: 0, questions: 0, exclaims: 0, negatives: 0 };
   const aStats = stats[sideA] || defaultStats;
   const bStats = stats[sideB] || defaultStats;
@@ -611,8 +611,8 @@ function updatePreview() {
   // 総合点計算
   const totalA = computeTotal(state.scores.A);
   const totalB = computeTotal(state.scores.B);
-  const displayNameA = state.sideAName || "側A";
-  const displayNameB = state.sideBName || "側B";
+  const displayNameA = state.sideAName || "Aサイド";
+  const displayNameB = state.sideBName || "Bサイド";
 
   // 必要に応じて自動判定（drawThreshold使用）
   let autoWinner = "draw";
@@ -761,13 +761,13 @@ function updateRadarChart() {
     labels,
     datasets: [
       {
-        label: state.sideAName || "側A",
+        label: state.sideAName || "Aサイド",
         data: aData,
         borderWidth: 2,
         pointRadius: 3
       },
       {
-        label: state.sideBName || "側B",
+        label: state.sideBName || "Bサイド",
         data: bData,
         borderWidth: 2,
         pointRadius: 3
