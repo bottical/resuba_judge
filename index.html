@@ -98,11 +98,11 @@
 
             <div class="form-row two-cols">
               <div class="form-group">
-                <label for="sideAName">側Aの名前 / ID</label>
+                <label for="sideAName">Aサイドの名前 / ID</label>
                 <input id="sideAName" type="text" placeholder="例：火気取り (@Virtue_Vulture_)" />
               </div>
               <div class="form-group">
-                <label for="sideBName">側Bの名前 / ID</label>
+                <label for="sideBName">Bサイドの名前 / ID</label>
                 <input id="sideBName" type="text" placeholder="例：KAZUYA (@kazuyaaaaaaaman)" />
               </div>
             </div>
@@ -117,8 +117,8 @@
           <div class="scores-table">
             <div class="scores-header">
               <div class="cell axis-col">評価軸</div>
-              <div class="cell side-col">側A</div>
-              <div class="cell side-col">側B</div>
+              <div class="cell side-col">Aサイド</div>
+              <div class="cell side-col">Bサイド</div>
             </div>
 
             <!-- ① データ妥当性 -->
@@ -220,8 +220,8 @@
             <div class="form-group">
               <label for="winner">勝者</label>
               <select id="winner">
-                <option value="A">側A</option>
-                <option value="B">側B</option>
+                <option value="A">Aサイド</option>
+                <option value="B">Bサイド</option>
                 <option value="draw">引き分け</option>
               </select>
             </div>
@@ -237,7 +237,7 @@
             <textarea
               id="summaryReasons"
               rows="3"
-              placeholder="例：&#10;- データの読み方と23%の意味について、側Aは正確に説明している一方で、側Bは誤読を継続している&#10;- 詭弁・人格攻撃は双方にあるが、議論を崩す方向への依存度は側Bの方が高い"
+              placeholder="例：&#10;- データの読み方と23%の意味について、Aサイドは正確に説明している一方で、Bサイドは誤読を継続している&#10;- 詭弁・人格攻撃は双方にあるが、議論を崩す方向への依存度はBサイドの方が高い"
             ></textarea>
           </div>
         </div>
@@ -273,11 +273,11 @@
           <h3>1. 論点と当事者</h3>
           <div class="parties">
             <div class="party">
-              <div class="party-label" id="reportSideALabel">側A</div>
+              <div class="party-label" id="reportSideALabel">Aサイド</div>
               <div class="party-name" id="reportSideAName">（未設定）</div>
             </div>
             <div class="party">
-              <div class="party-label" id="reportSideBLabel">側B</div>
+              <div class="party-label" id="reportSideBLabel">Bサイド</div>
               <div class="party-name" id="reportSideBName">（未設定）</div>
             </div>
           </div>
@@ -287,11 +287,11 @@
           <h3>2. 7軸スコア一覧</h3>
           <div class="scores-summary">
             <div class="total-box">
-              <div class="total-label">総合点（<span id="totalLabelSideA">側A</span>）</div>
+              <div class="total-label">総合点（<span id="totalLabelSideA">Aサイド</span>）</div>
               <div class="total-value" id="reportTotalA">-</div>
             </div>
             <div class="total-box">
-              <div class="total-label">総合点（<span id="totalLabelSideB">側B</span>）</div>
+              <div class="total-label">総合点（<span id="totalLabelSideB">Bサイド</span>）</div>
               <div class="total-value" id="reportTotalB">-</div>
             </div>
           </div>
@@ -301,8 +301,8 @@
               <thead>
                 <tr>
                   <th>評価軸</th>
-                  <th id="thSideA">側A</th>
-                  <th id="thSideB">側B</th>
+                  <th id="thSideA">Aサイド</th>
+                  <th id="thSideB">Bサイド</th>
                 </tr>
               </thead>
               <tbody>
